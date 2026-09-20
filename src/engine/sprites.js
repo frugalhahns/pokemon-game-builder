@@ -1,7 +1,10 @@
-// Simple, original placeholder art for the sandbox stage - drawn from scratch
-// with basic shapes (not traced from any official artwork) so the prototype
-// has some personality without shipping copyrighted sprite assets. Swap
-// drawSprite() out for real <img> sprites later if you have licensed art.
+// Real sprite art is loaded live from the PokeAPI sprites repository
+// (github.com/PokeAPI/sprites), a community-maintained mirror of the
+// official in-game sprites - see the "About the sprites" section in the
+// README for why these are fetched at runtime instead of being committed
+// to this (public) repo. If a sprite hasn't finished loading yet, or the
+// fetch fails (e.g. no internet connection), drawSprite() falls back to a
+// simple hand-drawn placeholder shape below so the game never breaks.
 
 function circle(ctx, x, y, r) {
   ctx.beginPath();
@@ -104,15 +107,40 @@ function drawGengar(ctx, x, y, r) {
   ctx.stroke();
 }
 
-const SPRITES = {
+const PLACEHOLDER_SPRITES = {
   pikachu: drawPikachu,
   charmander: drawCharmander,
   gengar: drawGengar,
 };
 
+// National Pokédex numbers for the sprite CDN lookup.
+const POKEDEX_ID = {
+  pikachu: 25,
+  charmander: 4,
+  gengar: 94,
+};
+
+const imageCache = new Map();
+function getSpriteImage(key) {
+  if (!imageCache.has(key)) {
+    const id = POKEDEX_ID[key];
+    const img = new Image();
+    if (id) img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+    imageCache.set(key, img);
+  }
+  return imageCache.get(key);
+}
+
 export function drawSprite(ctx, key, x, y, r) {
-  const fn = SPRITES[key] || drawGeneric;
+  const img = getSpriteImage(key);
   ctx.save();
-  fn(ctx, x, y, r);
+  if (img.complete && img.naturalWidth > 0) {
+    ctx.imageSmoothingEnabled = false; // keep the pixel-art look crisp when scaled up
+    const size = r * 2.3;
+    ctx.drawImage(img, x - size / 2, y - size / 2, size, size);
+  } else {
+    const fn = PLACEHOLDER_SPRITES[key] || drawGeneric;
+    fn(ctx, x, y, r);
+  }
   ctx.restore();
 }

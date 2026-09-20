@@ -47,6 +47,14 @@ The project opens with a tiny complete game already wired up:
 Click **Reset Game** at any time to put every Pokémon back at its starting
 spot and clear the score/game-over state.
 
+## Playing it
+
+This is a plain client-side web app (HTML/CSS/JS, canvas-rendered) — there's
+no account, no install, and no backend. Anyone with the link opens it in a
+browser and starts wiring blocks immediately. The easiest way to play is the
+hosted GitHub Pages link (see below); running it locally is mainly useful for
+editing the code itself.
+
 ## Running it locally
 
 This is plain HTML/CSS/JS with **no build step and no npm dependencies** —
@@ -69,6 +77,23 @@ python3 -m http.server 8000
 
 or the VS Code "Live Server" extension.
 
+## Hosting it (free)
+
+Since this is a static, no-build site, any static host works for free. This
+repo is set up for **GitHub Pages**, deployed straight from the `main`
+branch — no build, no config: `https://frugalhahns.github.io/pokemon-game-builder/`.
+Every push to `main` redeploys it automatically within a minute or two.
+
+Other free options, if you ever want one instead (e.g. to add a custom
+domain or a backend later):
+
+| Host | Notes |
+|---|---|
+| **GitHub Pages** (used here) | Free for public repos, zero config for a static site like this |
+| **Cloudflare Pages** | Free, generous limits, fast global CDN |
+| **Netlify** | Free tier, drag-and-drop deploys or GitHub integration |
+| **Vercel** | Free tier, GitHub integration, easy if you later add serverless functions |
+
 ## Project structure
 
 ```
@@ -84,7 +109,7 @@ pokemon-game-builder/
     │   ├── graph.js           Node/wire data model + topological sort
     │   ├── nodeTypes.js       The block "vocabulary" (see below)
     │   ├── stage.js           Live stage: object positions, collisions, score
-    │   ├── sprites.js         Simple placeholder Pokémon-style drawings
+    │   ├── sprites.js         Live PokeAPI sprite loading + placeholder fallback
     │   ├── inputManager.js    Keyboard -> D-Pad vector
     │   └── runtime.js         Runs the graph against the stage every frame
     └── editor/
@@ -114,9 +139,18 @@ block, a "Win" state, a Squirtle object, etc. all follow the same pattern).
 
 ## About the sprites
 
-The Pokémon on the stage are simple original placeholder shapes (colored
-circles with a few basic decorative features) drawn from scratch in
-`sprites.js` — not official artwork. Pokémon is a trademark of Nintendo,
-Game Freak, and Creatures Inc. This project is a personal, non-commercial,
-educational tool; swap in your own licensed or fan-made art if you want a
-closer look, especially before sharing it beyond personal use.
+The Pokémon on the stage are loaded **live in the browser** from
+[PokeAPI/sprites](https://github.com/PokeAPI/sprites), a community-maintained
+mirror of the official in-game sprites that's widely used by hobby and
+reference projects. `src/engine/sprites.js` fetches them by Pokédex number at
+runtime — no sprite image files are stored in this (public) repository, only
+the code that requests them. This keeps the repo itself free of redistributed
+Nintendo/Game Freak/Creatures Inc. artwork.
+
+If a sprite hasn't finished loading yet, or there's no internet connection,
+the game automatically falls back to simple original placeholder shapes
+(drawn from scratch in the same file) so it never breaks.
+
+Pokémon is a trademark of Nintendo, Game Freak, and Creatures Inc. This is a
+personal, non-commercial, educational project; it isn't affiliated with or
+endorsed by any of them.
