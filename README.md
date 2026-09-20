@@ -14,6 +14,10 @@ The first time you open it, a short 3-step walkthrough explains the wiring
 metaphor (`src/ui/onboarding.js`) — it only shows once per browser, but the
 **❓ How to Play** button in the header reopens it anytime.
 
+> Picking this project back up in a new session? Read
+> **[HANDOFF.md](./HANDOFF.md)** first — architecture notes, hard-won
+> gotchas, and a backlog of ideas for the next iteration.
+
 ## How it works
 
 The app is split into two halves, just like Game Builder Garage's Make mode:
