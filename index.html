@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pokémon Game Builder</title>
+<link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+<header>
+  <h1>⚡ Pokémon Game Builder</h1>
+  <button id="reset-btn" type="button">🔄 Reset Game</button>
+</header>
+
+<section id="stage-panel">
+  <div id="stage-wrap">
+    <canvas id="stage-canvas" width="640" height="380"></canvas>
+    <div id="score-display" class="hud">Score: 0</div>
+    <div id="gameover-overlay" class="hud-overlay" hidden>
+      <div class="gameover-card">Game Over!<br /><small>Press Reset to play again</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="editor-panel">
+  <aside id="palette"></aside>
+  <div id="node-canvas-wrapper">
+    <svg id="wire-layer"></svg>
+    <div id="node-layer"></div>
+  </div>
+</section>
+
+<footer>
+  <p>
+    Move Pikachu with <kbd>Arrow Keys</kbd> or <kbd>WASD</kbd>. Click a block on the left to add it to the canvas below.
+    Drag from a colored dot to another colored dot of the same color to wire blocks together. Click a block or a wire
+    and press <kbd>Delete</kbd> to remove it.
+  </p>
+</footer>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
