@@ -7,6 +7,7 @@ import { Runtime } from './engine/runtime.js';
 import { NodeEditor } from './editor/nodeEditor.js';
 import { buildPalette } from './editor/palette.js';
 import { initCloudUI } from './cloud/cloudUI.js';
+import { showOnboarding, shouldShowOnboardingAutomatically, markOnboardingSeen } from './ui/onboarding.js';
 
 const canvas = document.getElementById('stage-canvas');
 const scoreEl = document.getElementById('score-display');
@@ -15,6 +16,7 @@ const nodeLayer = document.getElementById('node-layer');
 const wireLayer = document.getElementById('wire-layer');
 const paletteEl = document.getElementById('palette');
 const resetBtn = document.getElementById('reset-btn');
+const howtoBtn = document.getElementById('howto-btn');
 
 const graph = new Graph(NodeTypes);
 const stage = new Stage(canvas, scoreEl, overlayEl);
@@ -37,6 +39,11 @@ editor.renderAll();
 initCloudUI({ graph, runtime, editor });
 
 resetBtn.addEventListener('click', () => runtime.reset());
+howtoBtn.addEventListener('click', () => showOnboarding());
+
+if (shouldShowOnboardingAutomatically()) {
+  showOnboarding().then(markOnboardingSeen);
+}
 
 let lastTime = performance.now();
 function loop(now) {

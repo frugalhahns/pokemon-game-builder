@@ -41,19 +41,39 @@ header h1 {
   margin: 0;
 }
 
-#reset-btn {
-  background: #3c5aa6;
-  color: white;
+.header-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.header-buttons button {
   border: none;
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: bold;
   cursor: pointer;
   font-size: 14px;
+  font-family: inherit;
+}
+
+#reset-btn {
+  background: #3c5aa6;
+  color: white;
 }
 
 #reset-btn:hover {
   background: #2c4784;
+}
+
+#howto-btn {
+  background: white;
+  color: var(--text);
+  border: 2px solid #3c5aa6;
+  padding: 6px 14px;
+}
+
+#howto-btn:hover {
+  background: #fff2cc;
 }
 
 #cloud-bar {
@@ -353,4 +373,109 @@ kbd {
 
 .modal-actions .modal-danger:hover {
   background: #dc2626;
+}
+
+.onboarding-card {
+  width: min(90vw, 420px);
+  text-align: center;
+}
+
+.onboarding-emoji {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.onboarding-title {
+  margin: 0 0 10px;
+  font-size: 19px;
+}
+
+.onboarding-body {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: normal;
+}
+
+.onboarding-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.onboarding-legend > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  flex-shrink: 0;
+}
+
+.onboarding-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.onboarding-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.onboarding-dot.active {
+  background: #3c5aa6;
+}
+
+.onboarding-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.onboarding-nav-right {
+  display: flex;
+  gap: 8px;
+}
+
+.onboarding-nav button {
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 14px;
+  border: 2px solid #3c5aa6;
+  cursor: pointer;
+}
+
+.onboarding-nav .onboarding-skip {
+  background: white;
+  color: #7a5c2e;
+  border-color: var(--border);
+}
+
+.onboarding-nav .onboarding-back {
+  background: white;
+}
+
+.onboarding-nav .onboarding-next {
+  background: #3c5aa6;
+  color: white;
+}
+
+.onboarding-nav .onboarding-next:hover {
+  background: #2c4784;
 }

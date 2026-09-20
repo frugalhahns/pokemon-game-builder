@@ -10,6 +10,10 @@ control it, a Touch Sensor between two Pokémon into a Game Over block — and
 sees the result live on the **Sandbox Stage** above it. There's no "correct"
 game here: it's a construction kit.
 
+The first time you open it, a short 3-step walkthrough explains the wiring
+metaphor (`src/ui/onboarding.js`) — it only shows once per browser, but the
+**❓ How to Play** button in the header reopens it anytime.
+
 ## How it works
 
 The app is split into two halves, just like Game Builder Garage's Make mode:
@@ -139,7 +143,8 @@ pokemon-game-builder/
     │   ├── firebase.js         Firebase init, auth, and Firestore save/load calls
     │   └── cloudUI.js          Wires the cloud toolbar up to firebase.js
     └── ui/
-        └── modal.js            Small styled prompt()/confirm() replacements
+        ├── modal.js            Small styled prompt()/confirm() replacements
+        └── onboarding.js        The first-time "How to Play" walkthrough
 ```
 
 ## The foundational blocks
