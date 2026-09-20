@@ -14,6 +14,7 @@ import { initMissionsUI } from './missions/missionUI.js';
 const canvas = document.getElementById('stage-canvas');
 const scoreEl = document.getElementById('score-display');
 const overlayEl = document.getElementById('gameover-overlay');
+const winEl = document.getElementById('win-overlay');
 const nodeLayer = document.getElementById('node-layer');
 const wireLayer = document.getElementById('wire-layer');
 const paletteEl = document.getElementById('palette');
@@ -21,7 +22,7 @@ const resetBtn = document.getElementById('reset-btn');
 const howtoBtn = document.getElementById('howto-btn');
 
 const graph = new Graph(NodeTypes);
-const stage = new Stage(canvas, scoreEl, overlayEl);
+const stage = new Stage(canvas, scoreEl, overlayEl, winEl);
 const input = new InputManager();
 const runtime = new Runtime(graph, stage, input);
 
@@ -63,29 +64,35 @@ function loop(now) {
 }
 requestAnimationFrame(loop);
 
-// A tiny starter game built entirely from wires, demonstrating the two
-// example mechanics from the brief: D-Pad -> Pikachu movement, and a Touch
-// Sensor -> Game State trigger (here for both "lose" and "score a point").
-// Also doubles as the "free play" state you land back on after a mission.
+// A small but complete starter game built entirely from wires: dodge a
+// patrolling Gengar (demonstrating the Patrol loop block) while collecting
+// 3 touches of Charmander to win (demonstrating a Counter as a bounded
+// loop). Also doubles as the "free play" state you land back on after a
+// mission. See README's "The starter game" section for the full wiring map.
 function buildDefaultGraph() {
   const dpad = graph.addNode('input.dpad', 30, 30);
+  const patrol = graph.addNode('logic.patrol', 30, 220);
 
   const pikachu = graph.addNode('object.pikachu', 300, 30);
   pikachu.spawn = { x: 140, y: 260 };
 
-  const gengar = graph.addNode('object.gengar', 300, 190);
+  const gengar = graph.addNode('object.gengar', 300, 220);
   gengar.spawn = { x: 480, y: 90 };
 
-  const charmander = graph.addNode('object.charmander', 300, 330);
+  const charmander = graph.addNode('object.charmander', 300, 420);
   charmander.spawn = { x: 100, y: 90 };
 
   const touchGengar = graph.addNode('sensor.touch', 580, 150);
   const gameOver = graph.addNode('state.gameover', 800, 150);
 
-  const touchCharmander = graph.addNode('sensor.touch', 580, 330);
-  const score = graph.addNode('state.score', 800, 330);
+  const touchCharmander = graph.addNode('sensor.touch', 580, 420);
+  const score = graph.addNode('state.score', 800, 420);
+  const counter = graph.addNode('logic.counter', 800, 560);
+  counter.param = 3;
+  const win = graph.addNode('state.win', 1020, 560);
 
   graph.connect(dpad.id, 'dir', pikachu.id, 'move');
+  graph.connect(patrol.id, 'dir', gengar.id, 'move');
 
   graph.connect(pikachu.id, 'obj', touchGengar.id, 'a');
   graph.connect(gengar.id, 'obj', touchGengar.id, 'b');
@@ -94,6 +101,8 @@ function buildDefaultGraph() {
   graph.connect(pikachu.id, 'obj', touchCharmander.id, 'a');
   graph.connect(charmander.id, 'obj', touchCharmander.id, 'b');
   graph.connect(touchCharmander.id, 'trigger', score.id, 'trigger');
+  graph.connect(touchCharmander.id, 'trigger', counter.id, 'trigger');
+  graph.connect(counter.id, 'done', win.id, 'trigger');
 }
 
 function resetToFreePlay() {

@@ -22,8 +22,19 @@ The app is split into two halves, just like Game Builder Garage's Make mode:
   below controls what happens here, instantly.
 - **Programming Canvas** (bottom) — drag blocks in from the palette on the
   left, then wire their colored dots together. A dot's color is its data
-  type (blue = direction, green = a Pokémon object, orange = a one-shot
-  trigger, purple = a number) — you can only connect matching colors.
+  type — you can only connect matching colors:
+
+  | Color | Type | Meaning |
+  |---|---|---|
+  | 🔵 Blue | Direction | A movement vector, like "which way to walk" |
+  | 🟢 Green | Object | A reference to a specific Pokémon on stage |
+  | 🟠 Orange | Trigger | A one-shot pulse - true for exactly the instant something happens |
+  | 🟣 Purple | Number | A plain number, like a score |
+  | 🩵 Teal | Boolean | A *held* true/false state, like "currently touching" (as opposed to the instant it started) |
+
+  Trigger and Boolean are deliberately different colors/types: a trigger is
+  an edge (the moment something happens), a boolean is a level (the state
+  right now). The **Turns On** block bridges from one to the other.
 
 ### Wiring controls
 
@@ -38,18 +49,25 @@ The app is split into two halves, just like Game Builder Garage's Make mode:
 
 ### The starter game
 
-The project opens with a tiny complete game already wired up:
+The project opens with a small but complete game already wired up: dodge a
+patrolling Gengar while collecting 3 touches of Charmander to win.
 
 1. **D-Pad → Pikachu (Move)** — arrow keys / WASD move Pikachu around the
    stage.
-2. **Pikachu + Gengar → Touch Sensor → Game Over** — bumping into Gengar
+2. **Patrol → Gengar (Move)** — Gengar walks back and forth on its own,
+   forever, with no key presses - a loop block driving a living obstacle.
+3. **Pikachu + Gengar → Touch Sensor → Game Over** — bumping into Gengar
    ends the game.
-3. **Pikachu + Charmander → Touch Sensor → Score Counter** — touching
+4. **Pikachu + Charmander → Touch Sensor → Score Counter** — touching
    Charmander adds a point (and it can be touched again once Pikachu moves
    away and back).
+5. **...→ Touch Sensor → Counter (count to 3) → You Win!** — the same touch
+   also feeds a Counter; the third touch fires "Reached!", which triggers the
+   win screen. A bounded loop ("do this 3 times") built from the same Counter
+   block used in the Missions below.
 
 Click **Reset Game** at any time to put every Pokémon back at its starting
-spot and clear the score/game-over state.
+spot and clear the score/game-over/win state.
 
 Every block in the left palette shows a plain-language description of what
 it does right under its name (and the same text shows up as a tooltip on
@@ -58,7 +76,7 @@ without leaving the app.
 
 ## Learning it: Missions
 
-Click **🎯 Missions** to try three short, progressive challenges instead of
+Click **🎯 Missions** to try four short, progressive challenges instead of
 free-building right away — each one clears the canvas down to just the
 blocks needed and teaches one concept:
 
@@ -67,6 +85,8 @@ blocks needed and teaches one concept:
    and Gengar into a Game Over.
 3. **Score a Point!** (Reuse What You Know) — the same sensor-into-trigger
    pattern, now wired into a Score Counter instead.
+4. **On Autopilot!** (Loops) — wire Patrol into Gengar and watch it walk back
+   and forth on its own, forever, with no keys pressed.
 
 A mission isn't marked complete just because a wire exists — it checks that
 the thing actually happens in the live game (Pikachu really moves, Game Over
@@ -168,7 +188,7 @@ pokemon-game-builder/
     │   ├── firebase.js         Firebase init, auth, and Firestore save/load calls
     │   └── cloudUI.js          Wires the cloud toolbar up to firebase.js
     ├── missions/
-    │   ├── missions.js          The 3 challenges: setup + isComplete per mission
+    │   ├── missions.js          The 4 challenges: setup + isComplete per mission
     │   ├── missionRunner.js     State machine: active mission, attempts, hint gate, progress
     │   └── missionUI.js         Mission-select modal + the live mission bar
     └── ui/
@@ -176,26 +196,47 @@ pokemon-game-builder/
         └── onboarding.js        The first-time "How to Play" walkthrough
 ```
 
-## The foundational blocks
+## The blocks
 
-| Block | Category | Inputs | Outputs |
-|---|---|---|---|
-| D-Pad | Input | — | Direction (vector) |
-| Pikachu / Charmander / Gengar | Pokémon | Move (vector) | Object, Position |
-| Touch Sensor | Sensor | Object A, Object B | On Touch (trigger) |
-| Game Over | Game State | Trigger | — |
-| Score Counter | Game State | Add Point (trigger) | Score (number) |
+| Block | Category | Inputs | Outputs | Param |
+|---|---|---|---|---|
+| D-Pad | Input | — | Direction (vector) | — |
+| Pikachu / Charmander / Gengar | Pokémon | Move (vector) | Object, Position | — |
+| Touch Sensor | Sensor | Object A, Object B | On Touch (trigger), Touching (boolean) | — |
+| Repeat Timer | Logic | — | Tick (trigger) | Seconds |
+| Counter | Logic | Count (trigger) | Reached! (trigger) | Count to |
+| Patrol | Logic | — | Direction (vector) | Seconds |
+| AND / OR Gate | Logic | A, B (boolean) | Result (boolean) | — |
+| NOT Gate | Logic | A (boolean) | Result (boolean) | — |
+| Turns On | Logic | Value (boolean) | Trigger (trigger) | — |
+| Game Over | Game State | Trigger | — | — |
+| You Win! | Game State | Trigger | — | — |
+| Score Counter | Game State | Add Point (trigger) | Score (number) | — |
+
+**Repeat Timer**, **Counter**, and **Patrol** are the loop blocks: Repeat
+Timer and Patrol run forever (an unbounded loop, like Blockly's "repeat
+forever"), while Counter runs a bounded number of times before firing once
+and resetting (like "repeat N times"). **AND/OR/NOT** are the same boolean
+logic Blockly's Logic category teaches, just wired instead of nested — drag
+two Touch Sensors' "Touching" outputs into an AND Gate for "only while
+touching both at once," for example.
+
+A block with a **Param** shows a small editable number right on the block
+itself (e.g. Patrol's "Seconds") - click it and type a new value.
 
 ## Adding a new block type
 
 All block behavior lives in `src/engine/nodeTypes.js`. Each entry is a plain
 object with `inputs`/`outputs` (typed ports), a plain-language `description`
-(shown in the palette and as a tooltip on placed blocks), and two lifecycle
-hooks: `create(node, ctx)` runs once when the block is added, `tick(node,
-ctx)` runs every frame after `node.inputs` has been filled in from whatever
-is wired into it. Add a new entry there and it automatically shows up in the
-palette and becomes wireable — that's the whole extension point (a Timer
-block, a "Win" state, a Squirtle object, etc. all follow the same pattern).
+(shown in the palette and as a tooltip on placed blocks), an optional
+`param` (a single inline-editable number on the block, e.g. `{ id, label,
+type: 'number', default, min, max, step }`, read as `node.param`), and two
+lifecycle hooks: `create(node, ctx)` runs once when the block is added,
+`tick(node, ctx)` runs every frame after `node.inputs` has been filled in
+from whatever is wired into it. Add a new entry there and it automatically
+shows up in the palette and becomes wireable — that's the whole extension
+point (a Squirtle object, a "Random" block, an XOR gate, etc. all follow the
+same pattern).
 
 ## About the sprites
 

@@ -63,9 +63,10 @@ export class NodeEditor {
     const idx = isInput
       ? def.inputs.findIndex((p) => p.id === portId)
       : def.inputs.length + def.outputs.findIndex((p) => p.id === portId);
+    const paramOffset = def.param ? ROW_H : 0;
     return {
       x: node.x + (isInput ? 0 : NODE_WIDTH),
-      y: node.y + HEADER_H + ROW_H * idx + ROW_H / 2,
+      y: node.y + HEADER_H + paramOffset + ROW_H * idx + ROW_H / 2,
     };
   }
 
@@ -100,11 +101,41 @@ export class NodeEditor {
 
     const body = document.createElement('div');
     body.className = 'node-body';
+    if (def.param) body.appendChild(this._buildParamRow(node, def.param));
     for (const p of def.inputs) body.appendChild(this._buildPortRow(node, p, true));
     for (const p of def.outputs) body.appendChild(this._buildPortRow(node, p, false));
     el.appendChild(body);
 
     return el;
+  }
+
+  _buildParamRow(node, paramDef) {
+    const row = document.createElement('div');
+    row.className = 'param-row';
+
+    const label = document.createElement('label');
+    label.textContent = paramDef.label;
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.className = 'param-input';
+    input.min = paramDef.min;
+    input.max = paramDef.max;
+    input.step = paramDef.step;
+    input.value = node.param ?? paramDef.default;
+    // Keep clicks/drags on the input from starting a node-drag or wire-drag.
+    input.addEventListener('mousedown', (e) => e.stopPropagation());
+    input.addEventListener('change', () => {
+      let value = parseFloat(input.value);
+      if (Number.isNaN(value)) value = paramDef.default;
+      value = Math.min(paramDef.max, Math.max(paramDef.min, value));
+      input.value = value;
+      node.param = value;
+    });
+
+    row.appendChild(label);
+    row.appendChild(input);
+    return row;
   }
 
   _buildPortRow(node, portDef, isInput) {

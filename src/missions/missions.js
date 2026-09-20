@@ -1,6 +1,6 @@
-// Three progressive challenges, each teaching one logic concept by clearing
+// Four progressive challenges, each teaching one logic concept by clearing
 // the canvas down to just the blocks needed and checking for the concept
-// actually working in the live game (not just that a wire exists). Mission
+// actually working in the live game (not just that a wire exists). Missions
 // 2 and 3 hand back a pre-wired D-Pad -> Pikachu connection, since movement
 // is the skill Mission 1 already taught - each mission introduces exactly
 // one new idea on top of what came before.
@@ -73,6 +73,29 @@ export const MISSIONS = [
     isComplete({ graph }, state) {
       const node = graph.nodes.get(state.scoreId);
       return (node?.state?.score || 0) >= 1;
+    },
+  },
+  {
+    id: 'loop',
+    emoji: '🔁',
+    title: 'On Autopilot!',
+    concept: 'Loops',
+    blurb: "Wire Patrol into Gengar's Move dot. Patrol repeats forever on its own — no keys needed — and Gengar will walk back and forth by itself.",
+    hint: 'Drag from Patrol\'s "Direction" dot to Gengar\'s "Move" dot. That\'s it — Patrol keeps looping automatically, flipping direction every couple of seconds.',
+    setup({ graph, runtime }) {
+      const patrol = graph.addNode('logic.patrol', 40, 40);
+      const gengar = graph.addNode('object.gengar', 320, 60);
+      gengar.spawn = { x: 320, y: 200 };
+      runtime.spawnNode(patrol);
+      runtime.spawnNode(gengar);
+      return { gengarId: gengar.id, spawn: { ...gengar.spawn } };
+    },
+    isComplete({ graph, stage }, state) {
+      const node = graph.nodes.get(state.gengarId);
+      if (!node?.gameObject) return false;
+      const obj = stage.getObject(node.gameObject.id);
+      if (!obj) return false;
+      return Math.hypot(obj.x - state.spawn.x, obj.y - state.spawn.y) > 40;
     },
   },
 ];

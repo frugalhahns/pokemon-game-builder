@@ -31,6 +31,7 @@ export class Runtime {
     for (const node of this.graph.nodes.values()) this.removeNode(node);
     this.stage.setScore(0);
     this.stage.setGameOver(false);
+    this.stage.setWin(false);
     this.graph.loadJSON(data);
     this.init();
   }
@@ -46,7 +47,7 @@ export class Runtime {
 
   tick(dt) {
     this.ctx.dt = dt;
-    if (!this.stage.gameOver) {
+    if (!this.stage.gameOver && !this.stage.win) {
       const order = this.graph.topoOrder();
       for (const id of order) {
         const node = this.graph.nodes.get(id);

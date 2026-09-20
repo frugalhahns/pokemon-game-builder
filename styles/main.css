@@ -163,12 +163,12 @@ header h1 {
   cursor: not-allowed;
 }
 
-.mission-next-btn {
+.mission-actions .mission-next-btn {
   background: #22c55e;
   color: white;
 }
 
-.mission-next-btn:hover {
+.mission-actions .mission-next-btn:hover {
   background: #16a34a;
 }
 
@@ -319,6 +319,20 @@ header h1 {
   color: #c0392b;
 }
 
+.win-overlay {
+  background: rgba(22, 163, 74, 0.55);
+}
+
+.win-card {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #16a34a;
+}
+
 #editor-panel {
   display: flex;
   height: 480px;
@@ -419,6 +433,28 @@ header h1 {
 
 .node-body {
   padding: 4px 0;
+}
+
+.param-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 26px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: bold;
+  gap: 6px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #eee;
+}
+
+.param-input {
+  width: 52px;
+  font-family: inherit;
+  font-size: 12px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  padding: 2px 4px;
 }
 
 .port-row {

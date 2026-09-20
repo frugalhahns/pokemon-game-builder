@@ -8,13 +8,15 @@ function clamp(value, min, max) {
 }
 
 export class Stage {
-  constructor(canvas, scoreEl, overlayEl) {
+  constructor(canvas, scoreEl, overlayEl, winEl) {
     this.canvas = canvas;
     this.ctx2d = canvas.getContext('2d');
     this.scoreEl = scoreEl;
     this.overlayEl = overlayEl;
+    this.winEl = winEl;
     this.objects = new Map();
     this.gameOver = false;
+    this.win = false;
     this.nextObjId = 0;
   }
 
@@ -64,8 +66,14 @@ export class Stage {
     if (this.overlayEl) this.overlayEl.hidden = !value;
   }
 
+  setWin(value) {
+    this.win = value;
+    if (this.winEl) this.winEl.hidden = !value;
+  }
+
   reset() {
     this.setGameOver(false);
+    this.setWin(false);
     for (const obj of this.objects.values()) {
       obj.x = obj.spawnX;
       obj.y = obj.spawnY;

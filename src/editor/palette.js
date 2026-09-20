@@ -4,6 +4,7 @@ const GROUP_LABELS = {
   input: 'Inputs',
   object: 'Pokémon',
   sensor: 'Sensors',
+  logic: 'Logic',
   state: 'Game State',
 };
 

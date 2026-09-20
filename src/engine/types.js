@@ -6,4 +6,5 @@ export const PortColors = {
   object: '#22c55e', // a reference to a Pokémon on the stage
   trigger: '#f97316', // a one-shot pulse (touched, scored, etc.)
   number: '#a855f7', // a plain number (like a score)
+  boolean: '#14b8a6', // a held true/false state (e.g. "currently touching"), as opposed to a one-shot trigger pulse
 };

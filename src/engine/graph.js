@@ -41,6 +41,7 @@ export class Graph {
       outputs: {},
       state: {},
     };
+    if (def.param) node.param = def.param.default;
     for (const out of def.outputs) {
       node.outputs[out.id] = out.default ?? null;
     }
@@ -131,6 +132,7 @@ export class Graph {
         // Capture the Pokémon's current on-stage position (not just its
         // original spawn point), so a save preserves where it actually is.
         spawn: n.gameObject ? { x: n.gameObject.x, y: n.gameObject.y } : n.spawn || null,
+        param: n.param,
       })),
       connections: [...this.connections.values()].map((c) => ({
         fromNode: c.fromNode,
@@ -151,6 +153,7 @@ export class Graph {
     for (const n of data.nodes || []) {
       const node = this.addNode(n.typeKey, n.x, n.y, n.id);
       if (n.spawn) node.spawn = n.spawn;
+      if (n.param !== undefined) node.param = n.param;
     }
     for (const c of data.connections || []) {
       this.connect(c.fromNode, c.fromPort, c.toNode, c.toPort);
