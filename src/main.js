@@ -6,6 +6,7 @@ import { InputManager } from './engine/inputManager.js';
 import { Runtime } from './engine/runtime.js';
 import { NodeEditor } from './editor/nodeEditor.js';
 import { buildPalette } from './editor/palette.js';
+import { initCloudUI } from './cloud/cloudUI.js';
 
 const canvas = document.getElementById('stage-canvas');
 const scoreEl = document.getElementById('score-display');
@@ -33,6 +34,7 @@ buildDefaultGraph();
 runtime.init();
 buildPalette(paletteEl, editor, NodeTypes);
 editor.renderAll();
+initCloudUI({ graph, runtime, editor });
 
 resetBtn.addEventListener('click', () => runtime.reset());
 

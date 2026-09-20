@@ -118,4 +118,42 @@ export class Graph {
     }
     return order;
   }
+
+  // Plain-JSON snapshot of the wiring (not runtime state like inputs/outputs
+  // or spawned game objects - those get rebuilt fresh on load).
+  toJSON() {
+    return {
+      nodes: [...this.nodes.values()].map((n) => ({
+        id: n.id,
+        typeKey: n.typeKey,
+        x: n.x,
+        y: n.y,
+        // Capture the Pokémon's current on-stage position (not just its
+        // original spawn point), so a save preserves where it actually is.
+        spawn: n.gameObject ? { x: n.gameObject.x, y: n.gameObject.y } : n.spawn || null,
+      })),
+      connections: [...this.connections.values()].map((c) => ({
+        fromNode: c.fromNode,
+        fromPort: c.fromPort,
+        toNode: c.toNode,
+        toPort: c.toPort,
+      })),
+    };
+  }
+
+  // Replaces the graph's contents with a previously-saved snapshot. Node
+  // ids are preserved so connections line up directly; the caller is
+  // responsible for tearing down any old runtime state (game objects, etc.)
+  // before calling this, and spawning fresh ones after.
+  loadJSON(data) {
+    this.nodes.clear();
+    this.connections.clear();
+    for (const n of data.nodes || []) {
+      const node = this.addNode(n.typeKey, n.x, n.y, n.id);
+      if (n.spawn) node.spawn = n.spawn;
+    }
+    for (const c of data.connections || []) {
+      this.connect(c.fromNode, c.fromPort, c.toNode, c.toPort);
+    }
+  }
 }

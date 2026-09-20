@@ -12,6 +12,20 @@
   <button id="reset-btn" type="button">🔄 Reset Game</button>
 </header>
 
+<section id="cloud-bar">
+  <button id="signin-btn" type="button">Sign in with Google to save</button>
+  <div id="signed-in-controls" hidden>
+    <span id="user-name"></span>
+    <button id="save-btn" type="button">💾 Save Game</button>
+    <select id="load-select">
+      <option value="">Load a saved game…</option>
+    </select>
+    <button id="delete-save-btn" type="button" hidden>🗑️ Delete</button>
+    <button id="signout-btn" type="button">Sign out</button>
+  </div>
+  <span id="cloud-status" role="status"></span>
+</section>
+
 <section id="stage-panel">
   <div id="stage-wrap">
     <canvas id="stage-canvas" width="640" height="380"></canvas>

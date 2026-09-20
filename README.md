@@ -47,6 +47,24 @@ The project opens with a tiny complete game already wired up:
 Click **Reset Game** at any time to put every Pokémon back at its starting
 spot and clear the score/game-over state.
 
+## Saving your game (cross-device)
+
+Click **Sign in with Google** in the toolbar to save your wired-up game to
+the cloud (Firebase) and load it back on any device — a save made on one
+computer or tablet shows up under **Load a saved game…** anywhere else you
+sign in with the same Google account.
+
+- **Save Game** — names and saves the current wiring + Pokémon positions.
+- **Load a saved game…** — replaces the current graph with a saved one.
+- **Delete** — removes the selected save permanently.
+
+Each person's saves are private to their own Google account (enforced by
+Firestore security rules in `firestore.rules` — a user can only read or
+write documents under their own `users/{uid}/` path). No save data is tied
+to a device, so it survives clearing browser data, a new computer, etc., as
+long as you sign in again. It's entirely free at this scale (Firebase's
+Spark plan).
+
 ## Playing it
 
 This is a plain client-side web app (HTML/CSS/JS, canvas-rendered) — there's
@@ -98,23 +116,30 @@ domain or a backend later):
 
 ```
 pokemon-game-builder/
-├── index.html              Page shell: stage panel + editor panel
+├── index.html              Page shell: cloud bar + stage panel + editor panel
 ├── server.js                Zero-dependency static file server
+├── firebase.json             Firebase project config (Firestore rules path)
+├── firestore.rules           Security rules: users can only touch their own saves
 ├── styles/
 │   └── main.css              All layout/visual styling
 └── src/
-    ├── main.js               Boots the engine, editor, and starter graph
+    ├── main.js               Boots the engine, editor, cloud UI, and starter graph
     ├── engine/
     │   ├── types.js           Port-type -> wire color mapping
-    │   ├── graph.js           Node/wire data model + topological sort
+    │   ├── graph.js           Node/wire data model, topological sort, save/load JSON
     │   ├── nodeTypes.js       The block "vocabulary" (see below)
     │   ├── stage.js           Live stage: object positions, collisions, score
     │   ├── sprites.js         Live PokeAPI sprite loading + placeholder fallback
     │   ├── inputManager.js    Keyboard -> D-Pad vector
     │   └── runtime.js         Runs the graph against the stage every frame
-    └── editor/
-        ├── nodeEditor.js       The draggable/wireable Programming Canvas
-        └── palette.js          Sidebar of block buttons
+    ├── editor/
+    │   ├── nodeEditor.js       The draggable/wireable Programming Canvas
+    │   └── palette.js          Sidebar of block buttons
+    ├── cloud/
+    │   ├── firebase.js         Firebase init, auth, and Firestore save/load calls
+    │   └── cloudUI.js          Wires the cloud toolbar up to firebase.js
+    └── ui/
+        └── modal.js            Small styled prompt()/confirm() replacements
 ```
 
 ## The foundational blocks

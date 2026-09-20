@@ -25,6 +25,16 @@ export class Runtime {
     if (node.gameObject) this.stage.removeObject(node.gameObject.id);
   }
 
+  // Tears down every current node (removing spawned game objects from the
+  // stage) and rebuilds the graph from a saved snapshot.
+  loadGraph(data) {
+    for (const node of this.graph.nodes.values()) this.removeNode(node);
+    this.stage.setScore(0);
+    this.stage.setGameOver(false);
+    this.graph.loadJSON(data);
+    this.init();
+  }
+
   reset() {
     this.stage.reset();
     for (const node of this.graph.nodes.values()) {
