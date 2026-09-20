@@ -13,6 +13,7 @@ function makePokemonObjectType(spriteKey, label, color) {
     category: 'object',
     label,
     color,
+    description: `${label} on the stage. Wire something into its Move dot to control it, or wire its Object dot into a Sensor to use it there.`,
     sprite: spriteKey,
     inputs: [{ id: 'move', label: 'Move', type: 'vector2', default: { x: 0, y: 0 } }],
     outputs: [
@@ -44,6 +45,7 @@ export const NodeTypes = {
     category: 'input',
     label: 'D-Pad',
     color: '#3b82f6',
+    description: "Reads your arrow keys and sends out a direction. Wire it into a Pokémon's Move dot to control it.",
     inputs: [],
     outputs: [{ id: 'dir', label: 'Direction', type: 'vector2', default: { x: 0, y: 0 } }],
     tick(node, ctx) {
@@ -60,6 +62,7 @@ export const NodeTypes = {
     category: 'sensor',
     label: 'Touch Sensor',
     color: '#0ea5e9',
+    description: 'Watches two Pokémon and sends a quick ON signal the instant they bump into each other. Wire two Pokémon in, then wire the trigger dot out to whatever should happen when they touch.',
     inputs: [
       { id: 'a', label: 'Object A', type: 'object' },
       { id: 'b', label: 'Object B', type: 'object' },
@@ -85,6 +88,7 @@ export const NodeTypes = {
     category: 'state',
     label: 'Game Over',
     color: '#ef4444',
+    description: 'Ends the game the instant its trigger dot gets a signal.',
     inputs: [{ id: 'trigger', label: 'Trigger', type: 'trigger' }],
     outputs: [],
     tick(node, ctx) {
@@ -97,6 +101,7 @@ export const NodeTypes = {
     category: 'state',
     label: 'Score Counter',
     color: '#22c55e',
+    description: 'Adds one point every time its trigger dot gets a signal.',
     inputs: [{ id: 'trigger', label: 'Add Point', type: 'trigger' }],
     outputs: [{ id: 'value', label: 'Score', type: 'number', default: 0 }],
     create(node) {

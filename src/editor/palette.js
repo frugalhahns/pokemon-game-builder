@@ -25,7 +25,20 @@ export function buildPalette(container, nodeEditor, nodeTypes) {
       const btn = document.createElement('button');
       btn.className = 'palette-btn';
       btn.style.borderColor = def.color;
-      btn.textContent = def.label;
+      btn.title = def.description || '';
+
+      const title = document.createElement('span');
+      title.className = 'palette-btn-title';
+      title.textContent = def.label;
+      btn.appendChild(title);
+
+      if (def.description) {
+        const desc = document.createElement('span');
+        desc.className = 'palette-btn-desc';
+        desc.textContent = def.description;
+        btn.appendChild(desc);
+      }
+
       btn.addEventListener('click', () => {
         // Stagger new blocks into open space below the starter graph so
         // they never spawn stacked invisibly on top of an existing block.

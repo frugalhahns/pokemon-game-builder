@@ -94,6 +94,7 @@ export class NodeEditor {
     header.className = 'node-header';
     header.style.background = def.color;
     header.textContent = def.label;
+    header.title = def.description || '';
     header.addEventListener('mousedown', (e) => this._startNodeDrag(e, node));
     el.appendChild(header);
 

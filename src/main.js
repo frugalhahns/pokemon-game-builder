@@ -8,6 +8,8 @@ import { NodeEditor } from './editor/nodeEditor.js';
 import { buildPalette } from './editor/palette.js';
 import { initCloudUI } from './cloud/cloudUI.js';
 import { showOnboarding, shouldShowOnboardingAutomatically, markOnboardingSeen } from './ui/onboarding.js';
+import { MissionRunner } from './missions/missionRunner.js';
+import { initMissionsUI } from './missions/missionUI.js';
 
 const canvas = document.getElementById('stage-canvas');
 const scoreEl = document.getElementById('score-display');
@@ -23,6 +25,10 @@ const stage = new Stage(canvas, scoreEl, overlayEl);
 const input = new InputManager();
 const runtime = new Runtime(graph, stage, input);
 
+// Declared before the editor so its onConnect callback can reference it -
+// the callback only runs on user interaction, well after this is assigned.
+let missionRunner;
+
 const editor = new NodeEditor({
   graph,
   nodeLayer,
@@ -30,13 +36,15 @@ const editor = new NodeEditor({
   portColors: PortColors,
   onAddNode: (node) => runtime.spawnNode(node),
   onRemoveNode: (node) => runtime.removeNode(node),
+  onConnect: () => missionRunner?.registerAttempt(),
 });
 
-buildDefaultGraph();
-runtime.init();
+resetToFreePlay();
 buildPalette(paletteEl, editor, NodeTypes);
-editor.renderAll();
 initCloudUI({ graph, runtime, editor });
+
+missionRunner = new MissionRunner({ graph, runtime, editor, stage });
+initMissionsUI({ missionRunner, onExitToFreePlay: resetToFreePlay });
 
 resetBtn.addEventListener('click', () => runtime.reset());
 howtoBtn.addEventListener('click', () => showOnboarding());
@@ -50,6 +58,7 @@ function loop(now) {
   const dt = Math.min(0.05, (now - lastTime) / 1000);
   lastTime = now;
   runtime.tick(dt);
+  missionRunner.tick();
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
@@ -57,6 +66,7 @@ requestAnimationFrame(loop);
 // A tiny starter game built entirely from wires, demonstrating the two
 // example mechanics from the brief: D-Pad -> Pikachu movement, and a Touch
 // Sensor -> Game State trigger (here for both "lose" and "score a point").
+// Also doubles as the "free play" state you land back on after a mission.
 function buildDefaultGraph() {
   const dpad = graph.addNode('input.dpad', 30, 30);
 
@@ -84,4 +94,11 @@ function buildDefaultGraph() {
   graph.connect(pikachu.id, 'obj', touchCharmander.id, 'a');
   graph.connect(charmander.id, 'obj', touchCharmander.id, 'b');
   graph.connect(touchCharmander.id, 'trigger', score.id, 'trigger');
+}
+
+function resetToFreePlay() {
+  runtime.loadGraph({ nodes: [], connections: [] });
+  buildDefaultGraph();
+  runtime.init();
+  editor.renderAll();
 }

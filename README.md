@@ -51,6 +51,31 @@ The project opens with a tiny complete game already wired up:
 Click **Reset Game** at any time to put every Pokémon back at its starting
 spot and clear the score/game-over state.
 
+Every block in the left palette shows a plain-language description of what
+it does right under its name (and the same text shows up as a tooltip on
+placed blocks) — so "what does a Touch Sensor actually do?" has an answer
+without leaving the app.
+
+## Learning it: Missions
+
+Click **🎯 Missions** to try three short, progressive challenges instead of
+free-building right away — each one clears the canvas down to just the
+blocks needed and teaches one concept:
+
+1. **Get Moving!** (Cause & Effect) — wire the D-Pad into Pikachu and move him.
+2. **Danger Zone!** (If This, Then That) — wire a Touch Sensor between Pikachu
+   and Gengar into a Game Over.
+3. **Score a Point!** (Reuse What You Know) — the same sensor-into-trigger
+   pattern, now wired into a Score Counter instead.
+
+A mission isn't marked complete just because a wire exists — it checks that
+the thing actually happens in the live game (Pikachu really moves, Game Over
+really fires), so the concept has to actually work, not just look right.
+Each mission has a **Hint** button that stays locked for a couple of tries
+(`src/missions/missionRunner.js`) — a kid has to attempt it themselves before
+the hint text is offered. Progress is saved locally per browser. **Exit**
+at any point returns to the free-play starter game.
+
 ## Saving your game (cross-device)
 
 Click **Sign in with Google** in the toolbar to save your wired-up game to
@@ -142,6 +167,10 @@ pokemon-game-builder/
     ├── cloud/
     │   ├── firebase.js         Firebase init, auth, and Firestore save/load calls
     │   └── cloudUI.js          Wires the cloud toolbar up to firebase.js
+    ├── missions/
+    │   ├── missions.js          The 3 challenges: setup + isComplete per mission
+    │   ├── missionRunner.js     State machine: active mission, attempts, hint gate, progress
+    │   └── missionUI.js         Mission-select modal + the live mission bar
     └── ui/
         ├── modal.js            Small styled prompt()/confirm() replacements
         └── onboarding.js        The first-time "How to Play" walkthrough
@@ -160,10 +189,11 @@ pokemon-game-builder/
 ## Adding a new block type
 
 All block behavior lives in `src/engine/nodeTypes.js`. Each entry is a plain
-object with `inputs`/`outputs` (typed ports) and two lifecycle hooks:
-`create(node, ctx)` runs once when the block is added, `tick(node, ctx)`
-runs every frame after `node.inputs` has been filled in from whatever is
-wired into it. Add a new entry there and it automatically shows up in the
+object with `inputs`/`outputs` (typed ports), a plain-language `description`
+(shown in the palette and as a tooltip on placed blocks), and two lifecycle
+hooks: `create(node, ctx)` runs once when the block is added, `tick(node,
+ctx)` runs every frame after `node.inputs` has been filled in from whatever
+is wired into it. Add a new entry there and it automatically shows up in the
 palette and becomes wireable — that's the whole extension point (a Timer
 block, a "Win" state, a Squirtle object, etc. all follow the same pattern).
 
